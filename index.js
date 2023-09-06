@@ -1,13 +1,14 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const port = 3000 || process.env.port;
+const port = 3000 || process.env.PRT;
 const fs = require("fs");
 const axios = require("axios");
 const FormData = require('form-data');
 let formData = new FormData();
 
 app.use(cors());
+app.use(express.json());
 
 let pdfList = [];
 
@@ -41,7 +42,7 @@ function change(name) {
 }
 
 app.get("/", (req, res) => {
-  res.json({ message: "Hello world" });
+  res.json({ message: "App is up and running" });
 });
 
 app.get("/files", (req, res) => {
@@ -69,7 +70,7 @@ app.post('/send/:id',(req,res)=>{
   formData.append('name_space', pdf.name); 
   
 
-  axios.post('https://gpt6-backend-8x4p.onrender.com/create-namespace', formData, {
+  axios.post('https://gpt6-backend.onrender.com/create-namespace', formData, {
       headers: {
           ...formData.getHeaders()
       }
