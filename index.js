@@ -9,21 +9,68 @@ let formData = new FormData();
 const path = require('path')
 app.use(cors());
 app.use(express.json());
-
+const pdfPoppler = require('pdf-poppler')
 let pdfList = [];
 
-fs.readdir("./Archive", (err, files) => {
+// fs.readdir("./Archive", (err, files) => {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     const pdfs = files.map((file, id) => {
+//       return {
+//         id: id,
+//         name: change(file.split(".")[0].toString()),
+//         path: "./Archive/" + file,
+//       };
+//     });
+//     pdfList = [...pdfs];
+//   }
+// });
+
+fs.readdir("./Archive", async (err, files) => {
   if (err) {
     console.log(err);
   } else {
-    const pdfs = files.map((file, id) => {
-      return {
-        id: id,
-        name: change(file.split(".")[0].toString()),
-        path: "./Archive/" + file,
-      };
+    const convertPromises = files.map((file, id) => {
+      return new Promise((resolve, reject) => {
+        if (path.extname(file) === '.pdf') {
+          let pdfPath = path.join(__dirname, 'Archive', file);
+          let imageName = id.toString() + '.jpeg'; // Image filename
+          let imagePath = path.join(__dirname, 'Archive', imageName); // Image path
+          let opts = {
+            format: 'jpeg',
+            out_dir: path.dirname(imagePath),
+            out_prefix: path.basename(imagePath, path.extname(imagePath)),
+            page: 1 // Only convert the first page
+          };
+
+          pdfPoppler.convert(pdfPath, opts)
+            .then(() => {
+              console.log(`Successfully converted ${file}`);
+              resolve({
+                id: id,
+                name: change(file.split(".")[0].toString()),
+                path: "./Archive/" + file,
+                imgPath: "./Archive/" + imageName,
+              });
+            })
+            .catch(err => {
+              console.error('An error occurred: ', err);
+              reject(err);
+            });
+        } else {
+          resolve(null);
+        }
+      });
     });
-    pdfList = [...pdfs];
+
+    Promise.all(convertPromises)
+      .then(pdfs => {
+        pdfList = pdfs.filter(pdf => pdf !== null); // Exclude null values
+      })
+      .catch(err => {
+        console.error('An error occurred during conversion: ', err);
+      });
   }
 });
 
