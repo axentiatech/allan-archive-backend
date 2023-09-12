@@ -20,7 +20,7 @@ fs.readdir("./Archive", (err, files) => {
     const pdfs = files.map((file, id) => {
       return {
         id: id,
-        name: change(file.split(".")[0].toString()),
+        name: "book_"+change(file.split(".")[0].toString()),
         path: "./Archive/" + file,
       };
     });
