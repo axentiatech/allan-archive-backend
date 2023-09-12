@@ -9,7 +9,8 @@ let formData = new FormData();
 const path = require('path')
 app.use(cors());
 app.use(express.json());
-const pdfPoppler = require('pdf-poppler')
+app.use('/images', express.static(path.join(__dirname, 'images')));
+// const pdfPoppler = require('pdf-poppler')
 let pdfList = [];
 
 fs.readdir("./Archive", (err, files) => {
@@ -36,7 +37,7 @@ fs.readdir("./Archive", (err, files) => {
 //         if (path.extname(file) === '.pdf') {
 //           let pdfPath = path.join(__dirname, 'Archive', file);
 //           let imageName = id.toString() + '.jpeg'; // Image filename
-//           let imagePath = path.join(__dirname, 'Archive', imageName); // Image path
+//           let imagePath = path.join(__dirname, 'Images', imageName); // Image path
 //           let opts = {
 //             format: 'jpeg',
 //             out_dir: path.dirname(imagePath),
@@ -51,7 +52,7 @@ fs.readdir("./Archive", (err, files) => {
 //                 id: id,
 //                 name: change(file.split(".")[0].toString()),
 //                 path: "./Archive/" + file,
-//                 imgPath: "./Archive/" + imageName,
+//                 imgPath: "./Images/" + imageName,
 //               });
 //             })
 //             .catch(err => {
@@ -64,15 +65,15 @@ fs.readdir("./Archive", (err, files) => {
 //       });
 //     });
 
-    Promise.all(convertPromises)
-      .then(pdfs => {
-        pdfList = pdfs.filter(pdf => pdf !== null); // Exclude null values
-      })
-      .catch(err => {
-        console.error('An error occurred during conversion: ', err);
-      });
-  }
-});
+//     Promise.all(convertPromises)
+//       .then(pdfs => {
+//         pdfList = pdfs.filter(pdf => pdf !== null); // Exclude null values
+//       })
+//       .catch(err => {
+//         console.error('An error occurred during conversion: ', err);
+//       });
+//   }
+// });
 
 // function to change the name of pdf to pass on as namespace
 function change(name) {
